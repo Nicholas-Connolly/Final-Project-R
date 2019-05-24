@@ -1,0 +1,32 @@
+---
+title: "Senator_Voting_Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r libraries}
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+```
+
+
+
+
+```{r data}
+senator_party <- read.csv(file="senator_party.csv")
+senator_votes_1 <- read.csv(file="senator_votes_113-1.csv")
+senator_votes_1 <- read.csv(file="senator_votes_113-2.csv")
+senators <- read.csv(file="senator.csv")
+result_code <- read.csv(file="result_code_list.csv")
+tally_code <- read.csv(file="tally_code_list.csv")
+```
+
+
