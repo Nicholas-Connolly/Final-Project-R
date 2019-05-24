@@ -38,13 +38,40 @@ vote_table$tally_code = ifelse(vote_table$tally_code=="A",0,1)
 
 party_votes <- left_join(vote_table,select(senator_party,member_code,caucus_with), by = "member_code")
 
+party_votes
+
+party_vote_count <- party_votes %>%
+  select(voteno, caucus_with, tally_code) %>%
+  group_by(voteno, caucus_with) %>%
+  mutate( total_party_votes = sum(voteno)/voteno ) %>%
+  group_by(voteno, caucus_with, total_party_votes) %>%
+  summarise( total_party_support = sum(tally_code) )
+
+party_vote_count <- party_vote_count %>%
+  mutate( avg_party_support = total_party_support/total_party_votes)
+
+party_vote_count
+  
+
+party_support_difference <- select(party_vote_count,voteno,caucus_with,avg_party_support) %>%
+  spread(key = caucus_with, value = avg_party_support) %>%
+  mutate( difference = D-R )
+
+party_support_difference
+
+
+
 name_votes <- left_join(party_votes,select(senators,member_code,print_name), by = "member_code")
+
+#name_votes
 
 group_votes <- select(name_votes,voteno,tally_code,caucus_with) %>%
   group_by(caucus_with) %>%
-  mutate( sum(tally_code) )
+  summarise( total = sum(tally_code) )
 
-group_votes
+#group_votes
+
+
 
 ```
 
