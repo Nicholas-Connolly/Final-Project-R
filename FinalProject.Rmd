@@ -23,10 +23,30 @@ library(tidyverse)
 ```{r data}
 senator_party <- read.csv(file="senator_party.csv")
 senator_votes_1 <- read.csv(file="senator_votes_113-1.csv")
-senator_votes_1 <- read.csv(file="senator_votes_113-2.csv")
+senator_votes_2 <- read.csv(file="senator_votes_113-2.csv")
 senators <- read.csv(file="senator.csv")
 result_code <- read.csv(file="result_code_list.csv")
 tally_code <- read.csv(file="tally_code_list.csv")
 ```
+
+```{r combine table}
+
+vote_table <- select(senator_votes_1,voteno,member_code,tally_code) %>%
+  filter(tally_code %in% c("A","B"))
+
+vote_table$tally_code = ifelse(vote_table$tally_code=="A",0,1)
+
+party_votes <- left_join(vote_table,select(senator_party,member_code,caucus_with), by = "member_code")
+
+name_votes <- left_join(party_votes,select(senators,member_code,print_name), by = "member_code")
+
+group_votes <- select(name_votes,voteno,tally_code,caucus_with) %>%
+  group_by(caucus_with) %>%
+  mutate( sum(tally_code) )
+
+group_votes
+
+```
+
 
 
