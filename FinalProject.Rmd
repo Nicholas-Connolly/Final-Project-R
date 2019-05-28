@@ -27,6 +27,11 @@ senator_votes_2 <- read.csv(file="senator_votes_113-2.csv")
 senators <- read.csv(file="senator.csv")
 result_code <- read.csv(file="result_code_list.csv")
 tally_code <- read.csv(file="tally_code_list.csv")
+
+regions_data <- read.csv(file="regions_data.csv")
+regions_description <- read.csv(file="regions_description.csv")
+
+regions_data <- subset(regions_data, id_regions_description != 5)
 ```
 
 ```{r combine table}
@@ -61,9 +66,14 @@ party_support_difference
 
 
 
-name_votes <- left_join(party_votes,select(senators,member_code,print_name), by = "member_code")
+name_votes <- left_join(party_votes,select(senators,member_code,print_name,state_code), by = "member_code")
+
+name_votes <- left_join(name_votes,select(regions_data,state_code,id_regions_description), by = "state_code")
+
+name_votes <- left_join(name_votes,select(regions_description,id_regions_description,title), by = "id_regions_description")
 
 #name_votes
+
 
 group_votes <- select(name_votes,voteno,tally_code,caucus_with) %>%
   group_by(caucus_with) %>%
@@ -72,12 +82,11 @@ group_votes <- select(name_votes,voteno,tally_code,caucus_with) %>%
 #group_votes
 
 
-
 ```
 
 
 
-```{r plot}
+```{r plot party support}
 
 party_support_differenceD <- party_support_difference[order(party_support_difference$D),] %>%
   rowid_to_column()
@@ -95,10 +104,92 @@ party_support_difference %>% ggplot( ) + geom_point( aes(x=voteno, y=difference)
 
 ```
 
+```{r plot regions support}
+
+region_votes <- select(name_votes,voteno,print_name,tally_code,title)
+
+region_vote_count <- region_votes %>%
+  group_by(voteno, title) %>%
+  mutate( total_region_votes = sum(voteno)/voteno ) %>%
+  group_by(voteno, title, total_region_votes) %>%
+  summarise( total_region_support = sum(tally_code) )
+
+region_vote_count <- region_vote_count %>%
+  mutate( avg_region_support = total_region_support/total_region_votes)
+
+region_vote_count
+
+
+region_support_difference <- select(region_vote_count,voteno,title,avg_region_support) %>%
+  spread(key = title, value = avg_region_support)
+
+region_support_difference
+
+
+region_support_differenceNE <- region_support_difference[order(region_support_difference$Northeast),] %>%
+  rowid_to_column()
+
+region_support_differenceS <- region_support_difference[order(region_support_difference$South),] %>%
+  rowid_to_column()
+
+region_support_differenceW <- region_support_difference[order(region_support_difference$West),] %>%
+  rowid_to_column()
+
+region_support_differenceMW <- region_support_difference[order(region_support_difference$Midwest),] %>%
+  rowid_to_column()
+
+
+
+region_support_difference %>% ggplot() + geom_point( aes( x=voteno, y=Northeast), color="blue") + geom_point( aes(x=voteno, y=South), color="red") + geom_point( aes(x=voteno, y=Midwest), color="gold") + geom_point( aes(x=voteno, y=West), color="green") + xlab("Vote") + ylab("Region Support")
+
+
+region_support_differenceNE %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast), color="blue") + geom_point( aes(x=as.factor(rowid), y=South), color="red") + geom_point( aes(as.factor(rowid), y=Midwest), color="gold") + geom_point( aes(as.factor(rowid), y=West), color="green") + xlab("Vote") + ylab("Region Support")
+
+region_support_differenceS %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast), color="blue") + geom_point( aes(x=as.factor(rowid), y=South), color="red") + geom_point( aes(as.factor(rowid), y=Midwest), color="gold") + geom_point( aes(as.factor(rowid), y=West), color="green") + xlab("Vote") + ylab("Region Support")
+
+region_support_differenceW %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast), color="blue") + geom_point( aes(x=as.factor(rowid), y=South), color="red") + geom_point( aes(as.factor(rowid), y=Midwest), color="gold") + geom_point( aes(as.factor(rowid), y=West), color="green") + xlab("Vote") + ylab("Region Support")
+
+region_support_differenceMW %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast), color="blue") + geom_point( aes(x=as.factor(rowid), y=South), color="red") + geom_point( aes(as.factor(rowid), y=Midwest), color="gold") + geom_point( aes(as.factor(rowid), y=West), color="green") + xlab("Vote") + ylab("Region Support")
+
+
+
+```
+
 
 ```{r consitency}
 
-name_votes_D <- select(name_votes,)
+support_totals <- left_join(region_support_difference,select(party_support_difference,voteno,D,R), by = "voteno")
+
+support_totals
+
+senator_consistency <- select(name_votes,member_code,print_name,caucus_with,state_code,title) %>%
+  group_by(member_code,print_name,caucus_with,state_code,title) %>% summarise()
+
+senator_consistency
+
+senator_consistency <- mutate( senator_consistency, cons_D = sum(group_by(name_votes,print_name)$tally_code) )
+
+
+senator_consistency
+
+#senator_consistency_test = filter()
+
+
+
+for( name in senator_consistency$print_name ){
+  #print(name)
+  local_senator_consistency = filter(group_by(name_votes,print_name), print_name == name)
+  
+  #local_senator_consistency
+  
+  #local_senator_consistency
+  #senator_consistency$cons_D
+}
+
+local_senator_consistency
+
+#group_by(name_votes,print_name) %>% summarise()
+
 
 ```
 
