@@ -77,3 +77,20 @@ group_votes <- select(name_votes,voteno,tally_code,caucus_with) %>%
 
 
 
+```{r plot}
+
+party_support_difference2 <- party_support_difference[order(party_support_difference$D),]
+
+party_support_difference2
+
+party_support_difference2 %>% ggplot() + geom_point( aes( x=rownames(party_support_difference2), y=D), color="blue") + geom_point( aes( x=rownames(party_support_difference2), y=R), color="red") + xlab("Vote") + ylab("Party Support")
+
+#party_support_difference2 %>% ggplot( ) + geom_point( aes( x=voteno, y=D ), color="blue") + geom_point( aes( x=voteno, y=R ), color="red") + xlab("Vote Number") + ylab("Party Support")
+
+#party_support_difference %>% ggplot( ) + geom_point( aes(x=voteno, y=difference))
+
+```
+
+
+
+
