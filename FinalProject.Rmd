@@ -1,6 +1,8 @@
 ---
 title: "Senator_Voting_Data"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-```{r libraries}
+```{r libraries, echo=FALSE}
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
@@ -20,7 +22,7 @@ library(tidyverse)
 
 
 
-```{r data}
+```{r data, echo=FALSE}
 senator_party <- read.csv(file="senator_party.csv")
 senator_votes_1 <- read.csv(file="senator_votes_113-1.csv")
 senator_votes_2 <- read.csv(file="senator_votes_113-2.csv")
@@ -34,7 +36,7 @@ regions_description <- read.csv(file="regions_description.csv")
 regions_data <- subset(regions_data, id_regions_description != 5)
 ```
 
-```{r combine table}
+```{r combine table, echo=FALSE}
 
 vote_table <- select(senator_votes_1,voteno,member_code,tally_code) %>%
   filter(tally_code %in% c("A","B"))
@@ -43,7 +45,7 @@ vote_table$tally_code = ifelse(vote_table$tally_code=="A",0,1)
 
 party_votes <- left_join(vote_table,select(senator_party,member_code,caucus_with), by = "member_code") 
 
-party_votes
+#party_votes
 
 party_vote_count <- party_votes %>%
   select(voteno, caucus_with, tally_code) %>%
@@ -55,14 +57,14 @@ party_vote_count <- party_votes %>%
 party_vote_count <- party_vote_count %>%
   mutate( avg_party_support = total_party_support/total_party_votes)
 
-party_vote_count
+#party_vote_count
   
 
 party_support_difference <- select(party_vote_count,voteno,caucus_with,avg_party_support) %>%
   spread(key = caucus_with, value = avg_party_support) %>%
   mutate( difference = D-R )
 
-party_support_difference
+#party_support_difference
 
 
 
@@ -94,11 +96,12 @@ party_support_differenceD <- party_support_difference[order(party_support_differ
 party_support_differenceR <- party_support_difference[order(party_support_difference$R),] %>%
   rowid_to_column()
 
-party_support_differenceD
+#party_support_differenceD
+
+party_support_differenceD %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=D), color="blue") + geom_point( aes( x=as.factor(rowid), y=R), color="red") + xlab("Vote") + ylab("Party Support")
 
 party_support_differenceR %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=D), color="blue") + geom_point( aes( x=as.factor(rowid), y=R), color="red") + xlab("Vote") + ylab("Party Support")
 
-#party_support_difference2 %>% ggplot( ) + geom_point( aes( x=voteno, y=D ), color="blue") + geom_point( aes( x=voteno, y=R ), color="red") + xlab("Vote Number") + ylab("Party Support")
 
 party_support_difference %>% ggplot( ) + geom_point( aes(x=voteno, y=difference), color="green")
 
@@ -117,13 +120,13 @@ region_vote_count <- region_votes %>%
 region_vote_count <- region_vote_count %>%
   mutate( avg_region_support = total_region_support/total_region_votes)
 
-region_vote_count
+#region_vote_count
 
 
 region_support_difference <- select(region_vote_count,voteno,title,avg_region_support) %>%
   spread(key = title, value = avg_region_support)
 
-region_support_difference
+#region_support_difference
 
 
 region_support_differenceNE <- region_support_difference[order(region_support_difference$Northeast),] %>%
@@ -156,7 +159,7 @@ region_support_differenceMW %>% ggplot() + geom_point( aes( x=as.factor(rowid), 
 ```
 
 
-```{r consitency}
+```{r consitency, echo=FALSE}
 
 support_totals <- left_join(region_support_difference,select(party_support_difference,voteno,D,R), by = "voteno")
 
@@ -199,7 +202,7 @@ for( name in senator_consistency$print_name ){
 
 senator_consistency <- mutate(senator_consistency, name_state = paste(print_name," (",caucus_with,"-",state_code,")", sep="") )
 
-senator_consistency
+#senator_consistency
 
 
 ShelbyD <- which(senator_consistency$print_name == "Shelby" & senator_consistency$caucus_with == "D" )
@@ -210,7 +213,7 @@ colnames(senator_consistency)[colnames(senator_consistency)=="caucus_with"] <- "
 
  
 
-senator_consistency
+#senator_consistency
 
 
 ```
