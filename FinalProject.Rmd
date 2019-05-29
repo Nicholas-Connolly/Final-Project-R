@@ -188,6 +188,8 @@ for( name in senator_consistency$print_name ){
 
 local_senator_consistency
 
+senator_consistency
+
 #group_by(name_votes,print_name) %>% summarise()
 
 
