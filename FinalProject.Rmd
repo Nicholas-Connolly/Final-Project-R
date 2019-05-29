@@ -41,7 +41,7 @@ vote_table <- select(senator_votes_1,voteno,member_code,tally_code) %>%
 
 vote_table$tally_code = ifelse(vote_table$tally_code=="A",0,1)
 
-party_votes <- left_join(vote_table,select(senator_party,member_code,caucus_with), by = "member_code")
+party_votes <- left_join(vote_table,select(senator_party,member_code,caucus_with), by = "member_code") 
 
 party_votes
 
@@ -195,11 +195,45 @@ for( name in senator_consistency$print_name ){
   
 }
 
+#senator_consistency
+
+senator_consistency <- mutate(senator_consistency, name_state = paste(print_name," (",caucus_with,"-",state_code,")", sep="") )
+
+senator_consistency
+
+
+ShelbyD <- which(senator_consistency$print_name == "Shelby" & senator_consistency$caucus_with == "D" )
+
+senator_consistency <- senator_consistency[-ShelbyD,]
+
+colnames(senator_consistency)[colnames(senator_consistency)=="caucus_with"] <- "party"
+
+ 
+
 senator_consistency
 
 
 ```
 
+
+```{r bar charts}
+
+party.colors = c(D='blue', R='red')
+
+senator_consistency %>% ggplot( mapping=aes( x=reorder(name_state, -consist_D), y=consist_D, fill=party) ) + geom_bar( stat="identity") + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=1)) + scale_fill_manual(values=party.colors) + ggtitle("Alignment with D") + xlab("Senator") + ylab("Consistency with Average D Votes") + ylim(0,1)
+
+senator_consistency %>% ggplot( mapping=aes( x=reorder(name_state, -consist_R), y=consist_R, fill=party) ) + geom_bar( stat="identity") + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=1)) + scale_fill_manual(values=party.colors) + ggtitle("Alignment with R") + xlab("Senator") + ylab("Consistency with Average R Votes") + ylim(0,1)
+
+senator_consistency %>% ggplot( mapping=aes( x=reorder(name_state, -consist_NE), y=consist_NE, fill=party) ) + geom_bar( stat="identity") + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=1)) + scale_fill_manual(values=party.colors) + ggtitle("Alignment with Northeast") + xlab("Senator") + ylab("Consistency with Average NE Votes") + ylim(0,1)
+
+senator_consistency %>% ggplot( mapping=aes( x=reorder(name_state, -consist_S), y=consist_S, fill=party) ) + geom_bar( stat="identity") + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=1)) + scale_fill_manual(values=party.colors) + ggtitle("Alignment with South") + xlab("Senator") + ylab("Consistency with Average S Votes") + ylim(0,1)
+
+senator_consistency %>% ggplot( mapping=aes( x=reorder(name_state, -consist_MW), y=consist_MW, fill=party) ) + geom_bar( stat="identity") + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=1)) + scale_fill_manual(values=party.colors) + ggtitle("Alignment with Midwest") + xlab("Senator") + ylab("Consistency with Average MW Votes") + ylim(0,1)
+
+senator_consistency %>% ggplot( mapping=aes( x=reorder(name_state, -consist_W), y=consist_W, fill=party) ) + geom_bar( stat="identity") + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=1)) + scale_fill_manual(values=party.colors) + ggtitle("Alignment with West") + xlab("Senator") + ylab("Consistency with Average W Votes") + ylim(0,1)
+
+
+```
 
 
 
