@@ -160,37 +160,42 @@ region_support_differenceMW %>% ggplot() + geom_point( aes( x=as.factor(rowid), 
 
 support_totals <- left_join(region_support_difference,select(party_support_difference,voteno,D,R), by = "voteno")
 
-support_totals
+#support_totals
 
 senator_consistency <- select(name_votes,member_code,print_name,caucus_with,state_code,title) %>%
   group_by(member_code,print_name,caucus_with,state_code,title) %>% summarise()
 
-senator_consistency
-
-senator_consistency <- mutate( senator_consistency, cons_D = sum(group_by(name_votes,print_name)$tally_code) )
+#senator_consistency
 
 
-senator_consistency
-
-#senator_consistency_test = filter()
+senator_consistency %>% mutate(consist_D = -1, consist_R = -1, consist_NE = -1, consist_S = -1, consist_MW = -1, consist_W = -1 )
 
 
 
 for( name in senator_consistency$print_name ){
-  #print(name)
-  local_senator_consistency = filter(group_by(name_votes,print_name), print_name == name)
   
-  #local_senator_consistency
+  name_index <- which(senator_consistency$print_name == name)
   
-  #local_senator_consistency
-  #senator_consistency$cons_D
+  local_senator_consistency <- filter(name_votes, print_name == name) %>%
+  left_join(support_totals, by = "voteno")
+  
+  
+  senator_consistency[name_index, "consist_D"] <- ( 1 - mean( abs( local_senator_consistency$D - local_senator_consistency$tally_code ) ) )
+  
+  senator_consistency[name_index, "consist_R"] <- ( 1 - mean( abs( local_senator_consistency$R - local_senator_consistency$tally_code ) ) )
+  
+  senator_consistency[name_index, "consist_NE"] <- ( 1 - mean( abs( local_senator_consistency$Northeast - local_senator_consistency$tally_code ) ) )
+  
+  senator_consistency[name_index, "consist_S"] <- ( 1 - mean( abs( local_senator_consistency$South - local_senator_consistency$tally_code ) ) )
+  
+  senator_consistency[name_index, "consist_MW"] <- ( 1 - mean( abs( local_senator_consistency$Midwest - local_senator_consistency$tally_code ) ) )
+  
+  senator_consistency[name_index, "consist_W"] <- ( 1 - mean( abs( local_senator_consistency$West - local_senator_consistency$tally_code ) ) )
+  
+  
 }
 
-local_senator_consistency
-
 senator_consistency
-
-#group_by(name_votes,print_name) %>% summarise()
 
 
 ```
