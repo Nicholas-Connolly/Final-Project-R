@@ -88,7 +88,9 @@ group_votes <- select(name_votes,voteno,tally_code,caucus_with) %>%
 
 
 
-```{r plot party support, echo=FALSE, include=FALSE}
+```{r plot party support, echo=FALSE}
+
+party.colors = c(D='blue', R='red')
 
 party_support_differenceD <- party_support_difference[order(party_support_difference$D),] %>%
   rowid_to_column()
@@ -98,16 +100,18 @@ party_support_differenceR <- party_support_difference[order(party_support_differ
 
 #party_support_differenceD
 
-party_support_differenceD %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=D), color="blue") + geom_point( aes( x=as.factor(rowid), y=R), color="red") + xlab("Vote") + ylab("Party Support")
+party_support_differenceD %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=D, color='D')) + geom_point( aes( x=as.factor(rowid), y=R, color='R')) + xlab("Vote") + ylab("Party Support") + scale_color_manual(values=party.colors) + labs(color = "Party") + ggtitle("Average Support by Party, Increasing by Democratic Support") + theme(axis.text.x = element_blank())
 
-party_support_differenceR %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=D), color="blue") + geom_point( aes( x=as.factor(rowid), y=R), color="red") + xlab("Vote") + ylab("Party Support")
+party_support_differenceR %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=D, color='D')) + geom_point( aes( x=as.factor(rowid), y=R, color='R')) + xlab("Vote") + ylab("Party Support") + scale_color_manual(values=party.colors) + labs(color = "Party") + ggtitle("Average Support by Party, Increasing by Republican Support") + theme(axis.text.x = element_blank())
 
 
-party_support_difference %>% ggplot( ) + geom_point( aes(x=voteno, y=difference), color="green")
+party_support_difference %>% ggplot( ) + geom_point( aes(x=voteno, y=difference), color="green") + ggtitle("Difference in Average Support by Party") + xlab("Vote") + ylab("Republican Support          Democratic Support")
 
 ```
 
 ```{r plot regions support, echo=FALSE}
+
+region.colors = c(Northeast='blue', South='red', Midwest='gold', West='green')
 
 region_votes <- select(name_votes,voteno,print_name,tally_code,title)
 
@@ -143,16 +147,16 @@ region_support_differenceMW <- region_support_difference[order(region_support_di
 
 
 
-region_support_difference %>% ggplot() + geom_point( aes( x=voteno, y=Northeast), color="blue") + geom_point( aes(x=voteno, y=South), color="red") + geom_point( aes(x=voteno, y=Midwest), color="gold") + geom_point( aes(x=voteno, y=West), color="green") + xlab("Vote") + ylab("Region Support")
+region_support_difference %>% ggplot() + geom_point( aes( x=voteno, y=Northeast, color='Northeast')) + geom_point( aes(x=voteno, y=South, color='South')) + geom_point( aes(x=voteno, y=Midwest, color='Midwest')) + geom_point( aes(x=voteno, y=West, color='West')) + xlab("Vote") + ylab("Region Support") + ggtitle("Average Support by Region") + scale_color_manual(values=region.colors) + labs(color = "Region")
 
 
-region_support_differenceNE %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast), color="blue") + geom_point( aes(x=as.factor(rowid), y=South), color="red") + geom_point( aes(as.factor(rowid), y=Midwest), color="gold") + geom_point( aes(as.factor(rowid), y=West), color="green") + xlab("Vote") + ylab("Region Support") + theme(axis.text.x = element_blank())
+region_support_differenceNE %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast, color='Northeast')) + geom_point( aes(x=as.factor(rowid), y=South, color='South')) + geom_point( aes(as.factor(rowid), y=Midwest, color='Midwest')) + geom_point( aes(as.factor(rowid), y=West, color='West')) + xlab("Vote") + ylab("Region Support") + theme(axis.text.x = element_blank()) + ggtitle("Average Support by Region, Increasing by Northeastern Support") + scale_color_manual(values=region.colors) + labs(color = "Region")
 
-region_support_differenceS %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast), color="blue") + geom_point( aes(x=as.factor(rowid), y=South), color="red") + geom_point( aes(as.factor(rowid), y=Midwest), color="gold") + geom_point( aes(as.factor(rowid), y=West), color="green") + xlab("Vote") + ylab("Region Support") + theme(axis.text.x = element_blank())
+region_support_differenceS %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast, color='Northeast')) + geom_point( aes(x=as.factor(rowid), y=South, color='South')) + geom_point( aes(as.factor(rowid), y=Midwest, color='Midwest')) + geom_point( aes(as.factor(rowid), y=West, color='West')) + xlab("Vote") + ylab("Region Support") + theme(axis.text.x = element_blank()) + ggtitle("Average Support by Region, Increasing by Southern Support") + scale_color_manual(values=region.colors) + labs(color = "Region")
 
-region_support_differenceW %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast), color="blue") + geom_point( aes(x=as.factor(rowid), y=South), color="red") + geom_point( aes(as.factor(rowid), y=Midwest), color="gold") + geom_point( aes(as.factor(rowid), y=West), color="green") + xlab("Vote") + ylab("Region Support") + theme(axis.text.x = element_blank())
+region_support_differenceMW %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast, color='Northeast')) + geom_point( aes(x=as.factor(rowid), y=South, color='South')) + geom_point( aes(as.factor(rowid), y=Midwest, color='Midwest')) + geom_point( aes(as.factor(rowid), y=West, color='West')) + xlab("Vote") + ylab("Region Support") + theme(axis.text.x = element_blank()) + ggtitle("Average Support by Region, Increasing by Midwestern Support") + scale_color_manual(values=region.colors) + labs(color = "Region")
 
-region_support_differenceMW %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast), color="blue") + geom_point( aes(x=as.factor(rowid), y=South), color="red") + geom_point( aes(as.factor(rowid), y=Midwest), color="gold") + geom_point( aes(as.factor(rowid), y=West), color="green") + xlab("Vote") + ylab("Region Support") + theme(axis.text.x = element_blank())
+region_support_differenceW %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=Northeast, color='Northeast')) + geom_point( aes(x=as.factor(rowid), y=South, color='South')) + geom_point( aes(as.factor(rowid), y=Midwest, color='Midwest')) + geom_point( aes(as.factor(rowid), y=West, color='West')) + xlab("Vote") + ylab("Region Support") + theme(axis.text.x = element_blank()) + ggtitle("Average Support by Region, Increasing by Western Support") + scale_color_manual(values=region.colors) + labs(color = "Region")
 
 
 
