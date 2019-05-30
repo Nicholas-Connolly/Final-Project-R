@@ -1,5 +1,5 @@
 ---
-title: "Senator_Voting_Data"
+title: "Senator Voting Records in the 113th Congress, First Session, 2013"
 output:
   html_document: default
   pdf_document: default
@@ -8,8 +8,6 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-## R Markdown
 
 
 
@@ -87,6 +85,10 @@ group_votes <- select(name_votes,voteno,tally_code,caucus_with) %>%
 ```
 
 
+## Average Support by Party
+
+For each bill proposed in the senate, a senator votes Yea or Nea. By regarding Yae = 1 and Nae = 0 and restricting to senators in a given party, we may compute the average support of each party for a given bill by taking the mean of the votes of all senators in that party. The disparity between the parties can be visualized by plotting these average supports.
+
 
 ```{r plot party support, echo=FALSE}
 
@@ -108,6 +110,13 @@ party_support_differenceR %>% ggplot() + geom_point( aes( x=as.factor(rowid), y=
 party_support_difference %>% ggplot( ) + geom_point( aes(x=voteno, y=difference), color="green") + ggtitle("Difference in Average Support by Party") + xlab("Vote") + ylab("Republican Support          Democratic Support")
 
 ```
+Notice that Democrats and Republicans usually vote differently.
+
+
+## Average Supporty by Region
+
+In addition to party, senators can be grouped into one of four regions based on their state: Northeast, South, Midwest, and West. As with the average party support, the average regional support of a bill can also be calculated by restricting to the senators in that region. Plotting shows the disparity in votes by region.
+
 
 ```{r plot regions support, echo=FALSE}
 
@@ -161,6 +170,8 @@ region_support_differenceW %>% ggplot() + geom_point( aes( x=as.factor(rowid), y
 
 
 ```
+
+Regions with similar voting records tend to be clustered around each other. This behavior is especially apparent when ordering the data with respect to a given region. For example, in the graph ordered by Southern support, the Midwest and the South show similar support for the same bills, whereas the Northeast shows very differnt support.
 
 
 ```{r consitency, echo=FALSE, include=FALSE}
@@ -222,6 +233,10 @@ colnames(senator_consistency)[colnames(senator_consistency)=="caucus_with"] <- "
 
 ```
 
+## Individual Senators Compared by Party and Region
+
+We are also interested in viewing how consistently an individual senator votes with a given party or region. By considering the difference between an individual senator's vote and the average vote, and taking a mean over all votes, we obtain a score between 0 and 1 for each senator with respect to each category. Organizing these results with a bar plot allows us to visualize how aligned each senator's voting record is with the average voting record of the party or region.
+
 
 ```{r bar charts, cache=TRUE, echo=FALSE, fig.width=15, fig.asp=0.7}
 
@@ -243,7 +258,16 @@ senator_consistency %>% ggplot( mapping=aes( x=reorder(name_state, -consist_W), 
 
 
 ```
-#![AlignmentD](./FinalProject_files/figure-html/bar charts-1.png)
+
+Notice that the average Northeast and West votes are primarily aligned with the average Democratic votes; likewise, Southern votes are primarily aligned wtih Republican votes. The Midwest exhibits more interesting behavior since it includes many senators of both parties.
+
+Also of interest is the fact that Senator Collins (R-MA) votes more consistently with the Democratic party than any other Republican senator, but she also represents a state in the Northeast, which is primarily Democratic.
+
+
+## Regional Voting Consistency by Party
+
+By comparing the average party support with the average regional support, we may view how aligned individual regions are with a given party. This is summarized by the bar chart below.
+
 
 ```{r party supporty by region, echo=FALSE}
 
